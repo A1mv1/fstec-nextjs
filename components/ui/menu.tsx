@@ -97,11 +97,12 @@ function MenuCheckboxItem({
       data-slot="menu-checkbox-item"
       {...props}
     >
-      <MenuPrimitive.CheckboxItemIndicator className="col-start-1">
+      <MenuPrimitive.CheckboxItemIndicator className="col-start-1 text-white">
         <svg
+          className="text-white"
           fill="none"
           height="24"
-          stroke="currentColor"
+          stroke="white"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="2"

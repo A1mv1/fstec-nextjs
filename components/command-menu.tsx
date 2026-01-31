@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { 
   Search, 
   BarChart3, 
@@ -32,6 +33,7 @@ interface CommandMenuProps {
 
 export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const router = useRouter();
+  const t = useTranslations('CommandMenu');
   const [openState, setOpenState] = React.useState(open ?? false);
 
   React.useEffect(() => {
@@ -40,7 +42,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
       const modifier = isMac ? e.metaKey : e.ctrlKey;
       
       // Открыть/закрыть командное меню: Cmd+K или Ctrl+K
-      if ((e.key === "k" || e.key === "K") && modifier) {
+      if ((e.key === "k" || e.key === "K") && modifier && !e.shiftKey) {
         e.preventDefault();
         setOpenState((open) => !open);
         return;
@@ -51,7 +53,18 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
       const target = e.target as HTMLElement;
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
       
-      if (modifier && !isInput) {
+      // Ранний перехват для Y (меры защиты) - предотвращаем действие браузера
+      if (modifier && !e.shiftKey && (e.key === 'y' || e.key === 'Y')) {
+        if (!isInput) {
+          e.preventDefault();
+          e.stopPropagation();
+          router.push('/protection-measures');
+          return;
+        }
+      }
+      
+      // Команды с Ctrl/Cmd без Shift (не конфликтующие с браузером)
+      if (modifier && !isInput && !e.shiftKey) {
         switch (e.key.toLowerCase()) {
           case 'h':
             e.preventDefault();
@@ -70,20 +83,38 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             // Проверяем, что это Shift+? или Shift+/
             if (e.shiftKey) {
               e.preventDefault();
-              // Открываем справку на главной странице
-              router.push('/');
-              // Отправляем событие для открытия справки
-              setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('openHelp'));
-              }, 200);
+              // Отправляем событие для открытия справки (работает на всех страницах)
+              window.dispatchEvent(new CustomEvent('openHelp'));
             }
+            break;
+        }
+      }
+
+      // Команды с Ctrl+Shift/Cmd+Shift (для избежания конфликтов с браузером)
+      // Ctrl+T, Ctrl+P, Ctrl+L конфликтуют с браузером
+      // Используем: Ctrl+Shift+T (угрозы), Ctrl+Shift+L (задачи)
+      if (modifier && e.shiftKey && !isInput) {
+        const key = e.key.toLowerCase();
+        // Проверяем и предотвращаем действие браузера заранее
+        if (key === 't' || key === 'l') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        
+        switch (key) {
+          case 't':
+            router.push('/threats');
+            break;
+          case 'l':
+            router.push('/tactical-tasks');
             break;
         }
       }
     };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    // Используем capture phase для более раннего перехвата
+    document.addEventListener("keydown", down, true);
+    return () => document.removeEventListener("keydown", down, true);
   }, [router]);
 
   React.useEffect(() => {
@@ -105,62 +136,60 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
         setOpenState(value);
         onOpenChange?.(value);
       }}
-      title="Командное меню"
-      description="Быстрый поиск и навигация по системе"
+      title={t("title")}
+      description={t("description")}
     >
-      <CommandInput placeholder="Введите команду или поиск..." />
+      <CommandInput placeholder={t("placeholder")} />
       <CommandList>
-        <CommandEmpty>Ничего не найдено.</CommandEmpty>
+        <CommandEmpty>{t("empty")}</CommandEmpty>
         
-        <CommandGroup heading="Навигация">
+        <CommandGroup heading={t("navigation")}>
           <CommandItem onSelect={() => handleSelect("/")}>
             <Home className="mr-2 h-4 w-4" />
-            <span>Главная страница</span>
+            <span>{t("homePage")}</span>
             <CommandShortcut>⌘H</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />
 
-        <CommandGroup heading="Разделы">
+        <CommandGroup heading={t("sections")}>
           <CommandItem onSelect={() => handleSelect("/analysis")}>
             <Target className="mr-2 h-4 w-4" />
-            <span>Анализ угроз</span>
+            <span>{t("threatAnalysis")}</span>
             <CommandShortcut>⌘A</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => handleSelect("/threats")}>
             <AlertTriangle className="mr-2 h-4 w-4" />
-            <span>Все угрозы</span>
+            <span>{t("allThreats")}</span>
+            <CommandShortcut>⌘⇧T</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => handleSelect("/protection-measures")}>
             <Shield className="mr-2 h-4 w-4" />
-            <span>Меры защиты</span>
+            <span>{t("protectionMeasures")}</span>
+            <CommandShortcut>⌘Y</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => handleSelect("/tactical-tasks")}>
             <Lock className="mr-2 h-4 w-4" />
-            <span>Тактические задачи</span>
+            <span>{t("tacticalTasks")}</span>
+            <CommandShortcut>⌘⇧L</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => handleSelect("/charts")}>
             <BarChart3 className="mr-2 h-4 w-4" />
-            <span>Графики и аналитика</span>
+            <span>{t("charts")}</span>
             <CommandShortcut>⌘G</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />
 
-        <CommandGroup heading="Справка">
+        <CommandGroup heading={t("help")}>
           <CommandItem onSelect={() => {
-            // Переходим на главную и открываем справку там
-            router.push("/");
-            // Даем время на навигацию, затем открываем справку
-            setTimeout(() => {
-              const event = new CustomEvent('openHelp');
-              window.dispatchEvent(event);
-            }, 100);
+            // Открываем справку на текущей странице
+            window.dispatchEvent(new CustomEvent('openHelp'));
           }}>
             <HelpCircle className="mr-2 h-4 w-4" />
-            <span>Открыть справку</span>
+            <span>{t("openHelp")}</span>
             <CommandShortcut>⌘?</CommandShortcut>
           </CommandItem>
         </CommandGroup>

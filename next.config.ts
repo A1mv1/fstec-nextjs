@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+// Explicitly specify the path to the request config
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
   /* конфигурация */
@@ -7,4 +11,4 @@ const nextConfig: NextConfig = {
   // Если нужен для Docker, раскомментируйте эту строку и запускайте сборку в Linux окружении
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

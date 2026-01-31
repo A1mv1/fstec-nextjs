@@ -29,6 +29,17 @@ function matchesSearch(threat: Threat, search: string): boolean {
   if (!search) return true;
   
   const searchLower = search.toLowerCase();
+  const searchTrimmed = search.trim();
+  
+  // Проверка по ID (числовой поиск)
+  const searchAsNumber = Number(searchTrimmed);
+  if (!isNaN(searchAsNumber) && searchAsNumber > 0) {
+    if (threat.id === searchAsNumber || threat.fstecId === searchAsNumber) {
+      return true;
+    }
+  }
+  
+  // Текстовый поиск
   return (
     threat.name.toLowerCase().includes(searchLower) ||
     threat.description.toLowerCase().includes(searchLower) ||

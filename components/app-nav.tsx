@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   BarChart3,
   Shield,
@@ -17,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetPopup as SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeSelector } from "@/components/theme-selector";
 import { CommandMenu } from "@/components/command-menu";
 import { HelpDialog } from "@/components/help-dialog";
 
@@ -141,20 +141,29 @@ export function AppNav() {
                 <span className="text-muted-foreground">⌘K</span>
               </Button>
               <CommandMenu open={commandMenuOpen} onOpenChange={setCommandMenuOpen} />
-              {pathname === "/" && (
-                <>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setHelpOpen(true)}
-                    title="Открыть справку (Cmd+Shift+?)"
-                  >
-                    <HelpCircle className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Справка</span>
-                  </Button>
-                  <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
-                </>
+              {pathname === "/" ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setHelpOpen(true)}
+                  title="Открыть справку (Cmd+Shift+?)"
+                >
+                  <HelpCircle className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Справка</span>
+                </Button>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => setHelpOpen(true)}
+                  title="Открыть справку (Cmd+Shift+?)"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  <span className="sr-only">Открыть справку</span>
+                </Button>
               )}
+              <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+              <ThemeSelector />
               <ThemeToggle />
               
               {/* Mobile menu */}

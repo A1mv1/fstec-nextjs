@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Shield, AlertTriangle, Lock, Target, BarChart3 } from "lucide-react";
+import { Shield, AlertTriangle, Lock, Target, BarChart3, Globe, FileText, ExternalLink, Database, Lightbulb, Info } from "lucide-react";
 
 interface HelpDialogProps {
   open: boolean;
@@ -14,32 +15,33 @@ interface HelpDialogProps {
 }
 
 export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
+  const t = useTranslations("HelpDialog");
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] sm:max-w-[95vw] max-h-[90vh] overflow-y-auto w-[95vw]">
         <DialogHeader>
-          <DialogTitle>Справка по системе</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Информация о системе анализа угроз безопасности информации
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
           {/* О системе */}
           <Card className="border-primary/10">
             <CardHeader>
-              <CardTitle className="text-lg text-primary">О системе</CardTitle>
+              <CardTitle className="text-lg text-primary">{t("aboutSystem")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-3">
-                Threat Analyzer — система для анализа угроз безопасности информации 
-                в соответствии с требованиями ФСТЭК России. Система позволяет:
+                {t("aboutDescription")}
               </p>
               <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside ml-2">
-                <li>Анализировать угрозы безопасности информации</li>
-                <li>Изучать меры защиты информации</li>
-                <li>Исследовать тактические задачи из модели MITRE ATT&CK</li>
-                <li>Визуализировать данные через графики и диаграммы</li>
-                <li>Фильтровать и искать угрозы по различным критериям</li>
+                <li>{t("aboutFeature1")}</li>
+                <li>{t("aboutFeature2")}</li>
+                <li>{t("aboutFeature3")}</li>
+                <li>{t("aboutFeature4")}</li>
+                <li>{t("aboutFeature5")}</li>
               </ul>
             </CardContent>
           </Card>
@@ -49,40 +51,36 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             {/* Основные понятия */}
             <Card className="border-primary/10">
               <CardHeader>
-                <CardTitle className="text-lg text-primary">Основные понятия</CardTitle>
+                <CardTitle className="text-lg text-primary">{t("keyConcepts")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h4 className="font-medium mb-1 text-sm">Угрозы безопасности информации</h4>
+                  <h4 className="font-medium mb-1 text-sm">{t("threatsTitle")}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Потенциальные действия нарушителей, которые могут привести к нарушению 
-                    безопасности информации. Каждая угроза характеризуется аспектами CIA триады 
-                    (Конфиденциальность, Целостность, Доступность), источниками угроз и объектами воздействия.
+                    {t("threatsDesc")}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1 text-sm">CIA триада</h4>
+                  <h4 className="font-medium mb-1 text-sm">{t("ciaTitle")}</h4>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Модель информационной безопасности, включающая три аспекта:
+                    {t("ciaDesc")}
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside ml-2">
-                    <li><strong>Конфиденциальность</strong> — защита от несанкционированного доступа</li>
-                    <li><strong>Целостность</strong> — защита от несанкционированного изменения</li>
-                    <li><strong>Доступность</strong> — обеспечение доступа к информации в нужное время</li>
+                    <li><strong>{t("confidentiality")}</strong></li>
+                    <li><strong>{t("integrity")}</strong></li>
+                    <li><strong>{t("availability")}</strong></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1 text-sm">Меры защиты</h4>
+                  <h4 className="font-medium mb-1 text-sm">{t("measuresTitle")}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Меры защиты информации, определенные в соответствии с Приказом ФСТЭК России 
-                    от 11 февраля 2013 г. N 17. Каждая мера защиты связана с угрозами, которые она помогает предотвратить.
+                    {t("measuresDesc")}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1 text-sm">Тактические задачи (MITRE ATT&CK)</h4>
+                  <h4 className="font-medium mb-1 text-sm">{t("tasksTitle")}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Тактические задачи из модели MITRE ATT&CK, которые описывают техники и тактики, 
-                    используемые нарушителями. Связаны с угрозами безопасности информации.
+                    {t("tasksDesc")}
                   </p>
                 </div>
               </CardContent>
@@ -91,56 +89,52 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             {/* Разделы системы */}
             <Card className="border-primary/10">
               <CardHeader>
-                <CardTitle className="text-lg text-primary">Разделы системы</CardTitle>
+                <CardTitle className="text-lg text-primary">{t("sections")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
                     <Target className="h-4 w-4 text-primary" />
-                    Анализ угроз
+                    {t("analysisSection")}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Фильтрация и поиск угроз по различным критериям: тактическим задачам, 
-                    нарушителям, объектам воздействия, аспектам CIA триады и мерам защиты.
+                    {t("analysisSectionDesc")}
                   </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-destructive" />
-                    Все угрозы
+                    {t("threatsSection")}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Просмотр полного списка угроз безопасности информации с возможностью 
-                    поиска, фильтрации и перехода к детальной информации.
+                    {t("threatsSectionDesc")}
                   </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
                     <Shield className="h-4 w-4 text-primary" />
-                    Меры защиты
+                    {t("measuresSection")}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Список мер защиты информации в соответствии с Приказом ФСТЭК №17. 
-                    Каждая мера содержит идентификатор и описание.
+                    {t("measuresSectionDesc")}
                   </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
                     <Lock className="h-4 w-4 text-primary" />
-                    Тактические задачи
+                    {t("tasksSection")}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Тактические задачи из модели MITRE ATT&CK, связанные с угрозами безопасности информации.
+                    {t("tasksSectionDesc")}
                   </p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
                     <BarChart3 className="h-4 w-4 text-primary" />
-                    Графики и аналитика
+                    {t("chartsSection")}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Визуализация данных: распределение угроз по CIA триаде, комбинации CIA, 
-                    топ нарушителей и объектов, статистика по мерам защиты и тактическим задачам.
+                    {t("chartsSectionDesc")}
                   </p>
                 </div>
               </CardContent>
@@ -152,7 +146,10 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             {/* Источники данных */}
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
-                <CardTitle className="text-lg">Источники данных</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Database className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-lg">{t("dataSources")}</CardTitle>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-3">
@@ -160,39 +157,47 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                     href="https://fstec.ru/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center transition-transform hover:scale-105"
+                    className="inline-flex items-center gap-2 transition-transform hover:scale-105"
                   >
                     <Badge variant="outline" className="border-primary hover:bg-primary/10 cursor-pointer">
-                      ФСТЭК России
+                      <Globe className="h-3 w-3 mr-1" />
+                      {t("fstecRussia")}
+                      <ExternalLink className="h-3 w-3 ml-1" />
                     </Badge>
                   </a>
                   <a
                     href="/Приказ%20ФСТЭК%20России%20от%2011%20февраля%202013%20г.%20N%2017.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center transition-transform hover:scale-105"
+                    className="inline-flex items-center gap-2 transition-transform hover:scale-105"
                   >
                     <Badge variant="outline" className="border-primary hover:bg-primary/10 cursor-pointer">
-                      Приказ ФСТЭК №17
+                      <FileText className="h-3 w-3 mr-1" />
+                      {t("fstecOrder")}
+                      <ExternalLink className="h-3 w-3 ml-1" />
                     </Badge>
                   </a>
                   <a
                     href="https://attack.mitre.org/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center transition-transform hover:scale-105"
+                    className="inline-flex items-center gap-2 transition-transform hover:scale-105"
                   >
                     <Badge variant="outline" className="border-primary hover:bg-primary/10 cursor-pointer">
+                      <Globe className="h-3 w-3 mr-1" />
                       MITRE ATT&CK
+                      <ExternalLink className="h-3 w-3 ml-1" />
                     </Badge>
                   </a>
                 </div>
                 <div className="pt-2 border-t border-primary/20">
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    💡 Все данные в системе кликабельны — вы можете переходить к детальной информации по угрозам, мерам защиты и тактическим задачам.
+                  <p className="text-sm font-medium text-foreground mb-2 flex items-start gap-2">
+                    <Lightbulb className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{t("clickableData")}</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Данные актуальны на момент последнего обновления базы угроз
+                  <p className="text-sm text-muted-foreground flex items-center gap-2">
+                    <Info className="h-4 w-4 flex-shrink-0" />
+                    <span>{t("dataActuality")}</span>
                   </p>
                 </div>
               </CardContent>
@@ -201,64 +206,61 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             {/* Советы по использованию */}
             <Card className="border-primary/10">
               <CardHeader>
-                <CardTitle className="text-lg text-primary">Советы по использованию</CardTitle>
+                <CardTitle className="text-lg text-primary">{t("tips")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside ml-2">
-                  <li>Все элементы интерфейса кликабельны — используйте их для навигации</li>
-                  <li>Фильтры можно комбинировать для точного поиска угроз</li>
-                  <li>Графики интерактивны — наводите курсор для детальной информации</li>
-                  <li>Используйте поиск для быстрого нахождения нужных элементов</li>
-                  <li>Переключайте тему для комфортной работы в любое время суток</li>
-                  <li>На страницах детального просмотра вы можете переходить к связанным сущностям</li>
-                  <li>Используйте горячие клавиши для быстрой навигации (см. KEYBOARD_SHORTCUTS.md)</li>
+                  <li>{t("tip1")}</li>
+                  <li>{t("tip2")}</li>
+                  <li>{t("tip3")}</li>
+                  <li>{t("tip4")}</li>
+                  <li>{t("tip5")}</li>
+                  <li>{t("tip6")}</li>
+                  <li>{t("tip7")}</li>
                 </ul>
               </CardContent>
             </Card>
           </div>
 
           {/* Часто задаваемые вопросы */}
-          <Card className="border-primary/10">
+          <Card className="border-primary/10 overflow-hidden transition-all duration-300 ease-in-out">
             <CardHeader>
-              <CardTitle className="text-lg text-primary">Часто задаваемые вопросы</CardTitle>
+              <CardTitle className="text-lg text-primary">{t("faq")}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="transition-all duration-300 ease-in-out">
               <Accordion className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="text-left">
-                    Как найти угрозу по конкретному нарушителю?
+                    {t("faq1Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Перейдите в раздел{" "}
+                      {t("faq1APart1")} {" "}
                       <Link href="/analysis" className="text-primary hover:underline">
-                        "Анализ угроз"
+                        "{t("faq1ALink")}"
                       </Link>
-                      {" "}и используйте фильтр по нарушителям. 
-                      Вы можете выбрать одного или нескольких нарушителей из списка. 
-                      Система автоматически отфильтрует угрозы, связанные с выбранными нарушителями.
+                      {" "}{t("faq1APart2")}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="text-left">
-                    Что означает CIA триада и как она используется?
+                    {t("faq2Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground mb-2">
-                      CIA триада — это модель информационной безопасности, состоящая из трех аспектов:
+                      {t("faq2A")}
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside ml-2">
-                      <li><strong>Конфиденциальность (Confidentiality)</strong> — защита от несанкционированного доступа к информации</li>
-                      <li><strong>Целостность (Integrity)</strong> — защита от несанкционированного изменения информации</li>
-                      <li><strong>Доступность (Availability)</strong> — обеспечение доступа к информации в нужное время</li>
+                      <li><strong>{t("faq2AConfidentiality")}</strong></li>
+                      <li><strong>{t("faq2AIntegrity")}</strong></li>
+                      <li><strong>{t("faq2AAvailability")}</strong></li>
                     </ul>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Каждая угроза может затрагивать один или несколько аспектов триады. 
-                      Вы можете фильтровать угрозы по этим аспектам в разделе{" "}
+                      {t("faq2APart2")} {" "}
                       <Link href="/analysis" className="text-primary hover:underline">
-                        анализа
+                        {t("faq2ALink")}
                       </Link>.
                     </p>
                   </AccordionContent>
@@ -266,20 +268,17 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
 
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="text-left">
-                    Как связаны меры защиты и угрозы?
+                    {t("faq3Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Каждая мера защиты направлена на противодействие определенным угрозам. 
-                      В системе вы можете просмотреть, какие угрозы связаны с конкретной мерой защиты, 
-                      и наоборот — какие меры защиты рекомендуются для противодействия конкретной угрозе. 
-                      Эта информация доступна на страницах детального просмотра{" "}
+                      {t("faq3APart1")} {" "}
                       <Link href="/threats" className="text-primary hover:underline">
-                        угроз
+                        {t("faq3AThreatsLink")}
                       </Link>
-                      {" "}и{" "}
+                      {" "}{t("faq3APart2")} {" "}
                       <Link href="/protection-measures" className="text-primary hover:underline">
-                        мер защиты
+                        {t("faq3AMeasuresLink")}
                       </Link>.
                     </p>
                   </AccordionContent>
@@ -287,7 +286,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
 
                 <AccordionItem value="item-4">
                   <AccordionTrigger className="text-left">
-                    Что такое тактические задачи MITRE ATT&CK?
+                    {t("faq4Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
@@ -299,13 +298,9 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                       >
                         MITRE ATT&CK
                       </a>
-                      {" "}— это модель знаний о тактиках и техниках кибератак, используемых нарушителями. 
-                      Тактические задачи в этой модели описывают конкретные действия, которые могут выполнять злоумышленники. 
-                      В системе каждая угроза может быть связана с одной или несколькими тактическими задачами, 
-                      что помогает лучше понять природу угрозы и способы ее реализации. 
-                      Подробнее о тактических задачах можно узнать в разделе{" "}
+                      {" "}{t("faq4APart1")} {" "}
                       <Link href="/tactical-tasks" className="text-primary hover:underline">
-                        "Тактические задачи"
+                        {t("faq4ALink")}
                       </Link>.
                     </p>
                   </AccordionContent>
@@ -313,73 +308,82 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
 
                 <AccordionItem value="item-5">
                   <AccordionTrigger className="text-left">
-                    Можно ли экспортировать данные из системы?
+                    {t("faq5Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Да, в системе реализован экспорт данных в различных форматах. 
-                      На странице{" "}
+                      {t("faq5APart1")} {" "}
                       <Link href="/analysis" className="text-primary hover:underline">
-                        "Анализ угроз"
+                        "{t("faq5AAnalysisLink")}"
                       </Link>
-                      {" "}вы можете экспортировать отфильтрованные результаты в форматах JSON, CSV, TSV и TXT. 
-                      На страницах детального просмотра{" "}
+                      {" "}{t("faq5APart2")} {" "}
                       <Link href="/threats" className="text-primary hover:underline">
-                        угроз
+                        {t("faq5AThreatsLink")}
                       </Link>
-                      {" "}также доступен экспорт данных об отдельной угрозе в тех же форматах. 
-                      Для экспорта используйте кнопку "Экспорт" на соответствующих страницах.
+                      {" "}{t("faq5APart3")} {" "}
+                      <span className="font-medium">{t("faq5AExportButton")}</span>
+                      {" "}{t("faq5APart4")}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-6">
                   <AccordionTrigger className="text-left">
-                    Как часто обновляются данные в системе?
+                    {t("faq6Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Данные в системе основаны на официальных источниках ФСТЭК России и MITRE ATT&CK. 
-                      Обновления базы угроз происходят по мере публикации новых версий нормативных документов. 
-                      Актуальность данных указана в информационном блоке на главной странице.
+                      {t("faq6A")}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-7">
                   <AccordionTrigger className="text-left">
-                    Можно ли комбинировать несколько фильтров одновременно?
+                    {t("faq7Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Да, в разделе{" "}
+                      {t("faq7APart1")} {" "}
                       <Link href="/analysis" className="text-primary hover:underline">
-                        "Анализ угроз"
+                        "{t("faq7ALink")}"
                       </Link>
-                      {" "}вы можете применять несколько фильтров одновременно. 
-                      Например, вы можете выбрать конкретного нарушителя, объект воздействия и аспекты CIA триады. 
-                      Система покажет только те угрозы, которые соответствуют всем выбранным критериям.
+                      {" "}{t("faq7APart2")}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-8">
                   <AccordionTrigger className="text-left">
-                    Где можно найти официальные документы ФСТЭК?
+                    {t("faq8Q")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="text-sm text-muted-foreground">
-                      Официальные документы ФСТЭК России доступны на сайте{" "}
+                      {t("faq8APart1")} {" "}
                       <a 
                         href="https://fstec.ru/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
                       >
-                        fstec.ru
+                        {t("faq8AFstecWebsite")}
                       </a>
-                      . Приказ ФСТЭК №17 также доступен для скачивания прямо из системы — 
-                      ссылка на него находится на главной странице в разделе "Меры защиты" и в блоке "Источники данных".
+                      {" "}{t("faq8APart2")} {" "}
+                      <a
+                        href="/Приказ%20ФСТЭК%20России%20от%2011%20февраля%202013%20г.%20N%2017.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {t("faq8AOrderLink")}
+                      </a>
+                      {" "}{t("faq8APart3")} {" "}
+                      <Link href="/protection-measures" className="text-primary hover:underline">
+                        {t("faq8AProtectionMeasuresLink")}
+                      </Link>
+                      {" "}{t("faq8APart4")} {" "}
+                      <span className="font-medium">{t("faq8ADataSources")}</span>
+                      {" "}{t("faq8APart5")}
                     </p>
                   </AccordionContent>
                 </AccordionItem>

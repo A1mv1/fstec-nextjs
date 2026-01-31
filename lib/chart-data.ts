@@ -1,32 +1,35 @@
 import type { Threat, ProtectionMeasure, TacticalTask } from './types';
 
+// Translation function type
+type TranslationFunction = (key: string) => string;
+
 /**
  * Подготовка данных для графика распределения угроз по CIA триаде
  */
-export function getCIADistributionData(threats: Threat[]) {
+export function getCIADistributionData(threats: Threat[], t: TranslationFunction) {
   const confidentiality = threats.filter(t => t.confidentiality).length;
   const integrity = threats.filter(t => t.integrity).length;
   const availability = threats.filter(t => t.availability).length;
 
   return [
-    { name: 'Конфиденциальность', value: confidentiality, fill: 'confidentiality' },
-    { name: 'Целостность', value: integrity, fill: 'integrity' },
-    { name: 'Доступность', value: availability, fill: 'availability' },
+    { name: t('confidentiality'), value: confidentiality, fill: 'confidentiality' },
+    { name: t('integrity'), value: integrity, fill: 'integrity' },
+    { name: t('availability'), value: availability, fill: 'availability' },
   ];
 }
 
 /**
  * Подготовка данных для графика комбинаций CIA
  */
-export function getCIACombinationsData(threats: Threat[]) {
+export function getCIACombinationsData(threats: Threat[], t: TranslationFunction) {
   const combinations = {
-    'Только Конфиденциальность': 0,
-    'Только Целостность': 0,
-    'Только Доступность': 0,
-    'Конфиденциальность + Целостность': 0,
-    'Конфиденциальность + Доступность': 0,
-    'Целостность + Доступность': 0,
-    'Все три (CIA)': 0,
+    [t('onlyConfidentiality')]: 0,
+    [t('onlyIntegrity')]: 0,
+    [t('onlyAvailability')]: 0,
+    [t('confidentialityIntegrity')]: 0,
+    [t('confidentialityAvailability')]: 0,
+    [t('integrityAvailability')]: 0,
+    [t('allThreeCIA')]: 0,
   };
 
   threats.forEach(threat => {
@@ -35,19 +38,19 @@ export function getCIACombinationsData(threats: Threat[]) {
     const a = threat.availability;
 
     if (c && !i && !a) {
-      combinations['Только Конфиденциальность']++;
+      combinations[t('onlyConfidentiality')]++;
     } else if (!c && i && !a) {
-      combinations['Только Целостность']++;
+      combinations[t('onlyIntegrity')]++;
     } else if (!c && !i && a) {
-      combinations['Только Доступность']++;
+      combinations[t('onlyAvailability')]++;
     } else if (c && i && !a) {
-      combinations['Конфиденциальность + Целостность']++;
+      combinations[t('confidentialityIntegrity')]++;
     } else if (c && !i && a) {
-      combinations['Конфиденциальность + Доступность']++;
+      combinations[t('confidentialityAvailability')]++;
     } else if (!c && i && a) {
-      combinations['Целостность + Доступность']++;
+      combinations[t('integrityAvailability')]++;
     } else if (c && i && a) {
-      combinations['Все три (CIA)']++;
+      combinations[t('allThreeCIA')]++;
     }
   });
 
@@ -127,7 +130,7 @@ export function getTacticalTasksDistributionData(threats: Threat[]) {
 /**
  * Подготовка данных для графика статистики по мерам защиты
  */
-export function getProtectionMeasuresStatsData(threats: Threat[]) {
+export function getProtectionMeasuresStatsData(threats: Threat[], t: TranslationFunction) {
   const withMeasures = threats.filter(
     threat => 
       threat.protectionMeasures.length > 0 && 
@@ -137,8 +140,8 @@ export function getProtectionMeasuresStatsData(threats: Threat[]) {
   const withoutMeasures = threats.length - withMeasures;
 
   return [
-    { name: 'С мерами защиты', value: withMeasures, fill: 'color1' },
-    { name: 'Без мер защиты', value: withoutMeasures, fill: 'color2' },
+    { name: t('withMeasures'), value: withMeasures, fill: 'color1' },
+    { name: t('withoutMeasures'), value: withoutMeasures, fill: 'color2' },
   ];
 }
 

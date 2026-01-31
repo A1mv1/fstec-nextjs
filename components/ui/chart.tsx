@@ -2,11 +2,12 @@
 
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
+import { useTheme } from "next-themes"
 
 import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: "", dark: ".dark" } as const
+const THEMES = { light: "", dark: ".dark", "retro-arcade": ".retro-arcade", "retro-arcade-dark": ".retro-arcade.dark" } as const
 
 export type ChartConfig = {
   [k in string]: {
@@ -70,32 +71,229 @@ function ChartContainer({
 }
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(
-    ([, config]) => config.theme || config.color
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+  const [isRetroArcade, setIsRetroArcade] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Определяем, активна ли retro-arcade тема
+  React.useEffect(() => {
+    if (!mounted || typeof window === "undefined") return
+    const container = document.documentElement
+    const hasRetroArcade = container.classList.contains("retro-arcade")
+    setIsRetroArcade(hasRetroArcade)
+
+    // Наблюдаем за изменениями класса
+    const observer = new MutationObserver(() => {
+      const hasRetro = container.classList.contains("retro-arcade")
+      setIsRetroArcade(hasRetro)
+    })
+
+    observer.observe(container, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    return () => observer.disconnect()
+  }, [mounted, resolvedTheme])
+
+  const colorConfig = React.useMemo(
+    () => Object.entries(config).filter(
+      ([, config]) => config.theme || config.color
+    ),
+    [config]
   )
 
   if (!colorConfig.length) {
     return null
   }
 
+  // Определяем текущую тему для применения цветов
+  const getCurrentTheme = (): keyof typeof THEMES => {
+    if (!mounted) return "light"
+    
+    if (isRetroArcade) {
+      return resolvedTheme === "dark" ? "retro-arcade-dark" : "retro-arcade"
+    }
+    
+    return resolvedTheme === "dark" ? "dark" : "light"
+  }
+
+  const currentTheme = getCurrentTheme()
+
+  // Применяем цвета динамически через inline стили
+  React.useEffect(() => {
+    if (!mounted || typeof document === "undefined") return
+    
+    const applyColors = () => {
+      const chartElement = document.querySelector(`[data-chart=${id}]`) as HTMLElement
+      if (!chartElement) return
+
+      // Сначала очищаем все существующие inline стили для переменных цветов
+      colorConfig.forEach(([key]) => {
+        chartElement.style.removeProperty(`--color-${key}`)
+      })
+
+      // Затем применяем новые цвета
+      colorConfig.forEach(([key, itemConfig]) => {
+        let color =
+          itemConfig.theme?.[currentTheme as keyof typeof itemConfig.theme] ||
+          itemConfig.color
+        
+        if (color) {
+          // Разрешаем CSS-переменные из темы (например, var(--chart-1))
+          if (color.startsWith('var(')) {
+            // Получаем имя переменной
+            const varName = color.match(/var\(([^)]+)\)/)?.[1]?.trim()
+            if (varName) {
+              // Получаем вычисленное значение переменной из темы
+              const computedValue = getComputedStyle(document.documentElement)
+                .getPropertyValue(varName)
+                .trim()
+              if (computedValue) {
+                color = computedValue
+              }
+            }
+          }
+          // Принудительно применяем через setProperty
+          chartElement.style.setProperty(`--color-${key}`, color)
+        }
+      })
+      
+      // Принудительно обновляем все SVG элементы, которые используют CSS переменные
+      const allElements = chartElement.querySelectorAll('*')
+      allElements.forEach((el) => {
+        const htmlEl = el as HTMLElement
+        const fill = htmlEl.getAttribute('fill')
+        const stroke = htmlEl.getAttribute('stroke')
+        
+        if (fill?.includes('var(--color-') || stroke?.includes('var(--color-')) {
+          colorConfig.forEach(([key, itemConfig]) => {
+            let color =
+              itemConfig.theme?.[currentTheme as keyof typeof itemConfig.theme] ||
+              itemConfig.color
+            
+            if (color) {
+              // Разрешаем CSS-переменные из темы (например, var(--chart-1))
+              if (color.startsWith('var(')) {
+                const varName = color.match(/var\(([^)]+)\)/)?.[1]?.trim()
+                if (varName) {
+                  const computedValue = getComputedStyle(document.documentElement)
+                    .getPropertyValue(varName)
+                    .trim()
+                  if (computedValue) {
+                    color = computedValue
+                  }
+                }
+              }
+              htmlEl.style.setProperty(`--color-${key}`, color)
+            } else {
+              htmlEl.style.removeProperty(`--color-${key}`)
+            }
+          })
+        }
+      })
+    }
+    
+    // Используем несколько попыток для гарантии применения
+    const timeoutId1 = setTimeout(applyColors, 0)
+    const timeoutId2 = setTimeout(applyColors, 100)
+    const timeoutId3 = setTimeout(applyColors, 300)
+
+    return () => {
+      clearTimeout(timeoutId1)
+      clearTimeout(timeoutId2)
+      clearTimeout(timeoutId3)
+    }
+  }, [mounted, currentTheme, id, colorConfig])
+
+  // Также генерируем статические стили для всех тем на случай, если динамическое применение не сработает
   return (
     <style
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+            ([theme, prefix]) => {
+              // Для retro-arcade тем используем более специфичные селекторы
+              if (theme === "retro-arcade") {
+                return `
+.retro-arcade:not(.dark) [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
+    return color ? `  --color-${key}: ${color} !important;` : null
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `
+              } else if (theme === "retro-arcade-dark") {
+                return `
+.retro-arcade.dark [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color
+    return color ? `  --color-${key}: ${color} !important;` : null
+  })
+  .filter(Boolean)
+  .join("\n")}
+}
+`
+              } else if (theme === "light") {
+                return `
+:root:not(.retro-arcade):not(.dark) [data-chart=${id}],
+html:not(.retro-arcade):not(.dark) [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color
+    return color ? `  --color-${key}: ${color} !important;` : null
+  })
+  .filter(Boolean)
+  .join("\n")}
+}
+
+/* Переопределяем для default темы (когда retro-arcade отсутствует) */
+html:not(.retro-arcade) [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color
+    return color ? `  --color-${key}: ${color} !important;` : null
+  })
+  .filter(Boolean)
+  .join("\n")}
+}
+`
+              } else if (theme === "dark") {
+                return `
+.dark:not(.retro-arcade) [data-chart=${id}],
+html.dark:not(.retro-arcade) [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color
+    return color ? `  --color-${key}: ${color} !important;` : null
+  })
+  .filter(Boolean)
+  .join("\n")}
+}
+`
+              }
+              return null
+            }
           )
+          .filter(Boolean)
           .join("\n"),
       }}
     />
