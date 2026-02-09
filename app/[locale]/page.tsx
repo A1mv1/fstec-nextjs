@@ -50,9 +50,9 @@ export default function Home() {
           <p className="text-muted-foreground max-w-2xl mb-4">
             {t('description')}
           </p>
-          <AnimatedShinyButton url={`/${locale}/register`}>
+          {/* <AnimatedShinyButton url={`/${locale}/register`}>
             {t('getStarted')}
-          </AnimatedShinyButton>
+          </AnimatedShinyButton> */}
         </div>
 
         {/* Навигационные карточки */}

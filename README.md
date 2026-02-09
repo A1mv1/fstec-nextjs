@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Threat Analyzer
 
-## Getting Started
+Веб-приложение для анализа угроз безопасности информации на основе данных Банка данных угроз ФСТЭК России и модели MITRE ATT&CK.
 
-First, run the development server:
+## Возможности
+
+- Многокритериальная фильтрация угроз (по тактическим задачам, нарушителям, объектам воздействия, CIA-триаде, мерам защиты)
+- Каталоги угроз, мер защиты и тактических задач с детальными страницами
+- Интерактивные графики и визуализация статистики
+- Экспорт данных в форматах JSON, CSV, TSV, TXT
+- Поддержка русского и английского языков
+- Тёмная и светлая темы оформления
+- Командное меню и горячие клавиши для быстрой навигации
+
+## Стек технологий
+
+- **Next.js 16** — фреймворк с серверным рендерингом и файловой маршрутизацией
+- **React 19** — библиотека пользовательских интерфейсов
+- **TypeScript 5** — статическая типизация
+- **Tailwind CSS 4** — утилитарный CSS-фреймворк
+- **shadcn/ui** — компоненты интерфейса на базе Radix UI
+- **Recharts** — интерактивные графики
+- **next-intl** — интернационализация
+- **Framer Motion** — анимации
+- **TanStack Table** — таблицы с сортировкой и пагинацией
+- **cmdk** — командное меню
+
+## Запуск
 
 ```bash
+# Установка зависимостей
+npm install
+
+# Парсинг CSV-данных (требуются CSV-файлы в корне проекта)
+npm run parse-csv
+
+# Запуск в режиме разработки
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Сборка для продакшена
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Структура проекта
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/[locale]/       — страницы приложения с локализацией
+components/         — React-компоненты (навигация, графики, UI)
+lib/                — утилиты, типы данных, фильтрация
+messages/           — переводы интерфейса (ru, en)
+public/data/        — JSON-данные приложения
+i18n/               — конфигурация интернационализации
+scripts/            — вспомогательные скрипты
+```
 
-## Learn More
+## Источники данных
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Банк данных угроз ФСТЭК России](https://bdu.fstec.ru/)
+- [Приказ ФСТЭК России от 11.02.2013 N 17](https://fstec.ru/)
+- [MITRE ATT&CK](https://attack.mitre.org/)

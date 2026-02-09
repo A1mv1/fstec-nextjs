@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 node_modules/
 /.pnp
@@ -33,7 +31,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
@@ -42,3 +40,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lock files (проект использует npm)
+pnpm-lock.yaml
+
+# исходные CSV-данные
+*.csv
+
+# генерируемые данные
+data/data.json
+public/data/data.json
+
+# документы
+*.pdf
+*.docx
+
+# внутренняя документация
+mcp-threat-analyzer.md
+INTERNATIONALIZATION.md
+KEYBOARD_SHORTCUTS.md
+ui-implementation-plan.md
+
+# одноразовые скрипты
+scripts/fix_all_remaining.js
+scripts/generate_docx.py
